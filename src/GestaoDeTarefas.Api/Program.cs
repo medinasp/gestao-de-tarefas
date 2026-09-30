@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json.Serialization;
 using FluentValidation;
 using GestaoDeTarefas.Api.Infrastructure;
@@ -15,7 +16,16 @@ builder.Services
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
-    options.SwaggerDoc("v1", new() { Title = "Gestão de Tarefas", Version = "v1" }));
+{
+    options.SwaggerDoc("v1", new() { Title = "Gestão de Tarefas", Version = "v1" });
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (File.Exists(xmlPath))
+    {
+        options.IncludeXmlComments(xmlPath);
+    }
+});
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("GestaoDeTarefas"));

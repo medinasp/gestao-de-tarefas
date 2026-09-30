@@ -147,4 +147,21 @@ public class TasksApiTests
         Assert.Equal(1, body.GetArrayLength());
         Assert.Equal("Done one", body[0].GetProperty("title").GetString());
     }
+
+    [Fact]
+    public async Task List_filters_by_due_date()
+    {
+        using var factory = new TasksApiFactory();
+        var client = factory.CreateClient();
+
+        await client.PostAsJsonAsync("/api/tasks", new { title = "Due Oct 1", dueDate = "2026-10-01", status = "Pending" });
+        await client.PostAsJsonAsync("/api/tasks", new { title = "Due Nov 1", dueDate = "2026-11-01", status = "Pending" });
+
+        var response = await client.GetAsync("/api/tasks?dueDate=2026-10-01");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal(1, body.GetArrayLength());
+        Assert.Equal("Due Oct 1", body[0].GetProperty("title").GetString());
+    }
 }
