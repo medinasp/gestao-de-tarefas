@@ -59,13 +59,14 @@ Base: `http://localhost:5090/api/tasks`
 
 O `code` (ex.: `TSK-A3FFB195`) é gerado pela API e retornado na criação.
 
-### Filtros da listagem
+### Filtros e busca na listagem
 
-`GET /api/tasks` aceita `status` e/ou `dueDate` como query string (combináveis):
+`GET /api/tasks` aceita `status`, `dueDate` e `search` como query string (combináveis). O `search` procura no título e na descrição (contém, sem diferenciar maiúsculas/minúsculas).
 
 ```
 GET /api/tasks?status=Done
 GET /api/tasks?dueDate=2026-10-01
+GET /api/tasks?search=café
 GET /api/tasks?status=Pending&dueDate=2026-10-01
 ```
 
@@ -109,6 +110,8 @@ curl -X PUT http://localhost:5090/api/tasks/{code} \
 
 curl -X DELETE http://localhost:5090/api/tasks/{code}
 ```
+
+O `PUT` é uma substituição completa do recurso: envie todos os campos. O `status` é obrigatório no `PUT` — omiti-lo resulta em `400` (evita rebaixar o status por engano).
 
 Erros seguem o formato **Problem Details** (RFC 7807). Uma validação de corpo inválida retorna `400` com os erros por campo; parâmetros de query inválidos (por exemplo, um `status` inexistente) também retornam `400`. Um código inexistente retorna `404`.
 

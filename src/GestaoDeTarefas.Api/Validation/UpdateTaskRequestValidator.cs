@@ -15,7 +15,7 @@ public sealed class UpdateTaskRequestValidator : AbstractValidator<UpdateTaskReq
             .MaximumLength(1000);
 
         RuleFor(x => x.Status)
-            .IsInEnum()
-            .WithMessage("Status must be one of: Pending, InProgress, Done.");
+            .NotNull().WithMessage("Status is required.")
+            .IsInEnum().WithMessage("Status must be one of: Pending, InProgress, Done.");
     }
 }

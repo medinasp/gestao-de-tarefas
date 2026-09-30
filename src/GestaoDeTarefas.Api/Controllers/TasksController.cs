@@ -29,7 +29,10 @@ public sealed class TasksController(
         return CreatedAtAction(nameof(GetByCode), new { code = task.Code }, task);
     }
 
-    /// <summary>Lista as tarefas, com filtros opcionais por status e/ou data de vencimento.</summary>
+    /// <summary>Lista as tarefas, com filtros opcionais por status, data de vencimento e busca textual.</summary>
+    /// <param name="status">Filtra por status (Pending, InProgress, Done).</param>
+    /// <param name="dueDate">Filtra pela data de vencimento (YYYY-MM-DD).</param>
+    /// <param name="search">Busca no título e na descrição (contém, sem diferenciar maiúsculas).</param>
     /// <response code="200">Lista de tarefas.</response>
     /// <response code="400">Filtro inválido (por exemplo, um status inexistente).</response>
     [HttpGet]
@@ -38,9 +41,10 @@ public sealed class TasksController(
     public async Task<IActionResult> List(
         [FromQuery] TodoTaskStatus? status,
         [FromQuery] DateOnly? dueDate,
+        [FromQuery] string? search,
         CancellationToken cancellationToken)
     {
-        var tasks = (await service.ListAsync(status, dueDate, cancellationToken))
+        var tasks = (await service.ListAsync(status, dueDate, search, cancellationToken))
             .Select(WithLinks)
             .ToList();
 

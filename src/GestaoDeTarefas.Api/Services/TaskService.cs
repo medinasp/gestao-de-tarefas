@@ -22,9 +22,9 @@ public sealed class TaskService(ITaskRepository repository, ILogger<TaskService>
         return task.ToResponse();
     }
 
-    public async Task<IReadOnlyList<TaskResponse>> ListAsync(TodoTaskStatus? status, DateOnly? dueDate, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<TaskResponse>> ListAsync(TodoTaskStatus? status, DateOnly? dueDate, string? search, CancellationToken cancellationToken = default)
     {
-        var tasks = await repository.ListAsync(status, dueDate, cancellationToken);
+        var tasks = await repository.ListAsync(status, dueDate, search, cancellationToken);
         return [.. tasks.Select(t => t.ToResponse())];
     }
 
@@ -41,7 +41,7 @@ public sealed class TaskService(ITaskRepository repository, ILogger<TaskService>
         var task = await repository.GetByCodeAsync(code, cancellationToken)
             ?? throw NotFoundException.ForTask(code);
 
-        task.Update(request.Title, request.Description, request.DueDate, request.Status);
+        task.Update(request.Title, request.Description, request.DueDate, request.Status!.Value);
 
         await repository.UpdateAsync(task, cancellationToken);
         logger.LogInformation("Task {Code} updated.", task.Code);

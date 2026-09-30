@@ -111,11 +111,11 @@ public class TaskServiceTests
             TodoTask.Create("A", null, null, TodoTaskStatus.Pending),
             TodoTask.Create("B", null, null, TodoTaskStatus.Pending)
         };
-        _repository.ListAsync(TodoTaskStatus.Pending, null, Arg.Any<CancellationToken>()).Returns(tasks);
+        _repository.ListAsync(TodoTaskStatus.Pending, null, null, Arg.Any<CancellationToken>()).Returns(tasks);
 
-        var result = await _service.ListAsync(TodoTaskStatus.Pending, null);
+        var result = await _service.ListAsync(TodoTaskStatus.Pending, null, null);
 
         Assert.Equal(2, result.Count);
-        await _repository.Received(1).ListAsync(TodoTaskStatus.Pending, null, Arg.Any<CancellationToken>());
+        await _repository.Received(1).ListAsync(TodoTaskStatus.Pending, null, null, Arg.Any<CancellationToken>());
     }
 }

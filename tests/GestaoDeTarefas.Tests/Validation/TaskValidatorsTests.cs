@@ -39,6 +39,16 @@ public class TaskValidatorsTests
     }
 
     [Fact]
+    public void Update_requires_status()
+    {
+        var request = new UpdateTaskRequest("Valid", null, null, null);
+
+        var result = _update.TestValidate(request);
+
+        result.ShouldHaveValidationErrorFor(x => x.Status);
+    }
+
+    [Fact]
     public void Update_rejects_undefined_status()
     {
         var request = new UpdateTaskRequest("Valid", null, null, (TodoTaskStatus)999);

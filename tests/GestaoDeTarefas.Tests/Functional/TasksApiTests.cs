@@ -82,6 +82,20 @@ public class TasksApiTests
     }
 
     [Fact]
+    public async Task Put_without_status_returns_400()
+    {
+        using var factory = new TasksApiFactory();
+        var client = factory.CreateClient();
+
+        var created = await client.PostAsJsonAsync("/api/tasks", new { title = "Old", status = "Pending" });
+        var code = (await created.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("code").GetString();
+
+        var response = await client.PutAsJsonAsync($"/api/tasks/{code}", new { title = "New" });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
     public async Task Put_missing_task_returns_404()
     {
         using var factory = new TasksApiFactory();
@@ -146,6 +160,23 @@ public class TasksApiTests
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
         Assert.Equal(1, body.GetArrayLength());
         Assert.Equal("Done one", body[0].GetProperty("title").GetString());
+    }
+
+    [Fact]
+    public async Task List_searches_by_title_and_description()
+    {
+        using var factory = new TasksApiFactory();
+        var client = factory.CreateClient();
+
+        await client.PostAsJsonAsync("/api/tasks", new { title = "Comprar café", status = "Pending" });
+        await client.PostAsJsonAsync("/api/tasks", new { title = "Reunião", description = "levar o café", status = "Pending" });
+        await client.PostAsJsonAsync("/api/tasks", new { title = "Enviar relatório", status = "Pending" });
+
+        var response = await client.GetAsync("/api/tasks?search=CAFÉ");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal(2, body.GetArrayLength());
     }
 
     [Fact]
