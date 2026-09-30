@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace GestaoDeTarefas.Tests.Functional;
 
-public sealed class TasksApiFactory : WebApplicationFactory<Program>
+internal sealed class TasksApiFactory : WebApplicationFactory<Program>
 {
     private readonly string _databaseName = "TestDb_" + Guid.NewGuid();
 
