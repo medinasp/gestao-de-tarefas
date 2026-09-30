@@ -1,5 +1,6 @@
 using GestaoDeTarefas.Api.Domain;
 using GestaoDeTarefas.Api.Dtos;
+using GestaoDeTarefas.Api.Exceptions;
 using GestaoDeTarefas.Api.Repositories;
 using GestaoDeTarefas.Api.Services;
 using Microsoft.Extensions.Logging.Abstractions;

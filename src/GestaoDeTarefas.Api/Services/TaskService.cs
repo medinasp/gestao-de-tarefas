@@ -1,5 +1,6 @@
 using GestaoDeTarefas.Api.Domain;
 using GestaoDeTarefas.Api.Dtos;
+using GestaoDeTarefas.Api.Exceptions;
 using GestaoDeTarefas.Api.Mapping;
 using GestaoDeTarefas.Api.Repositories;
 
@@ -30,7 +31,7 @@ public sealed class TaskService(ITaskRepository repository, ILogger<TaskService>
     public async Task<TaskResponse> GetAsync(string code, CancellationToken cancellationToken = default)
     {
         var task = await repository.GetByCodeAsync(code, cancellationToken)
-            ?? throw NotFoundException.Task(code);
+            ?? throw NotFoundException.ForTask(code);
 
         return task.ToResponse();
     }
@@ -38,7 +39,7 @@ public sealed class TaskService(ITaskRepository repository, ILogger<TaskService>
     public async Task<TaskResponse> UpdateAsync(string code, UpdateTaskRequest request, CancellationToken cancellationToken = default)
     {
         var task = await repository.GetByCodeAsync(code, cancellationToken)
-            ?? throw NotFoundException.Task(code);
+            ?? throw NotFoundException.ForTask(code);
 
         task.Update(request.Title, request.Description, request.DueDate, request.Status);
 
@@ -51,7 +52,7 @@ public sealed class TaskService(ITaskRepository repository, ILogger<TaskService>
     public async Task DeleteAsync(string code, CancellationToken cancellationToken = default)
     {
         var task = await repository.GetByCodeAsync(code, cancellationToken)
-            ?? throw NotFoundException.Task(code);
+            ?? throw NotFoundException.ForTask(code);
 
         await repository.DeleteAsync(task, cancellationToken);
         logger.LogInformation("Task {Code} deleted.", task.Code);

@@ -1,5 +1,5 @@
 using FluentValidation;
-using GestaoDeTarefas.Api.Domain;
+using GestaoDeTarefas.Api.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
