@@ -24,8 +24,7 @@ public sealed class TasksController(
     {
         await createValidator.ValidateAndThrowAsync(request, cancellationToken);
 
-        var task = await service.CreateAsync(request, cancellationToken);
-        WithLinks(task);
+        var task = WithLinks(await service.CreateAsync(request, cancellationToken));
 
         return CreatedAtAction(nameof(GetByCode), new { code = task.Code }, task);
     }
@@ -41,12 +40,9 @@ public sealed class TasksController(
         [FromQuery] DateOnly? dueDate,
         CancellationToken cancellationToken)
     {
-        var tasks = await service.ListAsync(status, dueDate, cancellationToken);
-
-        foreach (var task in tasks)
-        {
-            WithLinks(task);
-        }
+        var tasks = (await service.ListAsync(status, dueDate, cancellationToken))
+            .Select(WithLinks)
+            .ToList();
 
         return Ok(tasks);
     }
@@ -59,10 +55,7 @@ public sealed class TasksController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByCode(string code, CancellationToken cancellationToken)
     {
-        var task = await service.GetAsync(code, cancellationToken);
-        WithLinks(task);
-
-        return Ok(task);
+        return Ok(WithLinks(await service.GetAsync(code, cancellationToken)));
     }
 
     /// <summary>Atualiza uma tarefa existente (substituição completa).</summary>
@@ -77,10 +70,7 @@ public sealed class TasksController(
     {
         await updateValidator.ValidateAndThrowAsync(request, cancellationToken);
 
-        var task = await service.UpdateAsync(code, request, cancellationToken);
-        WithLinks(task);
-
-        return Ok(task);
+        return Ok(WithLinks(await service.UpdateAsync(code, request, cancellationToken)));
     }
 
     /// <summary>Remove uma tarefa.</summary>
@@ -95,7 +85,7 @@ public sealed class TasksController(
         return NoContent();
     }
 
-    private static void WithLinks(TaskResponse task)
+    private static TaskResponse WithLinks(TaskResponse task)
     {
         var self = $"/api/tasks/{task.Code}";
         task.Links = new Dictionary<string, LinkDto>
@@ -104,5 +94,6 @@ public sealed class TasksController(
             ["update"] = new(self, "PUT"),
             ["delete"] = new(self, "DELETE")
         };
+        return task;
     }
 }
