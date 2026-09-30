@@ -16,10 +16,16 @@ Na raiz do projeto:
 dotnet run --project src/GestaoDeTarefas.Api
 ```
 
-A API sobe em `http://localhost:5090`. O Swagger abre automaticamente em:
+A API sobe em `http://localhost:5090`. A raiz (`/`) redireciona para o Swagger, disponível em:
 
 ```
 http://localhost:5090/swagger
+```
+
+Em ambiente de desenvolvimento, a aplicação popula algumas tarefas de exemplo na primeira execução, para facilitar a exploração no Swagger. Como os dados são mantidos em memória, eles são recriados a cada reinício. Para iniciar sem dados de exemplo, execute em ambiente de produção:
+
+```bash
+ASPNETCORE_ENVIRONMENT=Production dotnet run --project src/GestaoDeTarefas.Api
 ```
 
 ## Como testar
