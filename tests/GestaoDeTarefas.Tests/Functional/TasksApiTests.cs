@@ -121,6 +121,17 @@ public class TasksApiTests
     }
 
     [Fact]
+    public async Task List_with_invalid_status_returns_400()
+    {
+        using var factory = new TasksApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync("/api/tasks?status=Banana");
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
     public async Task List_filters_by_status()
     {
         using var factory = new TasksApiFactory();

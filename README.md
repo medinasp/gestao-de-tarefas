@@ -34,13 +34,13 @@ São 33 testes cobrindo domínio, serviço (lógica de negócio), validações e
 
 Base: `http://localhost:5090/api/tasks`
 
-| Método | Rota | Descrição | Sucesso |
+| Método | Rota | Descrição | Códigos de status |
 |---|---|---|---|
-| POST | `/api/tasks` | Cria uma tarefa | `201 Created` (+ header `Location`) |
-| GET | `/api/tasks` | Lista tarefas (filtros opcionais) | `200 OK` |
-| GET | `/api/tasks/{code}` | Obtém uma tarefa pelo código | `200 OK` / `404` |
-| PUT | `/api/tasks/{code}` | Atualiza uma tarefa | `200 OK` / `400` / `404` |
-| DELETE | `/api/tasks/{code}` | Remove uma tarefa | `204 No Content` / `404` |
+| POST | `/api/tasks` | Cria uma tarefa | `201 Created` (+ header `Location`), `400` |
+| GET | `/api/tasks` | Lista tarefas (filtros opcionais) | `200 OK`, `400` |
+| GET | `/api/tasks/{code}` | Obtém uma tarefa pelo código | `200 OK`, `404` |
+| PUT | `/api/tasks/{code}` | Atualiza uma tarefa | `200 OK`, `400`, `404` |
+| DELETE | `/api/tasks/{code}` | Remove uma tarefa | `204 No Content`, `404` |
 
 ### Campos da tarefa
 
@@ -104,7 +104,7 @@ curl -X PUT http://localhost:5090/api/tasks/{code} \
 curl -X DELETE http://localhost:5090/api/tasks/{code}
 ```
 
-Erros seguem o formato **Problem Details** (RFC 7807). Uma validação inválida retorna `400` com os erros por campo.
+Erros seguem o formato **Problem Details** (RFC 7807). Uma validação de corpo inválida retorna `400` com os erros por campo; parâmetros de query inválidos (por exemplo, um `status` inexistente) também retornam `400`. Um código inexistente retorna `404`.
 
 ## Estrutura do projeto
 

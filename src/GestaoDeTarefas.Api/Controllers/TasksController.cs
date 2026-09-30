@@ -16,7 +16,7 @@ public sealed class TasksController(
 {
     [HttpPost]
     [ProducesResponseType(typeof(TaskResponse), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(CreateTaskRequest request, CancellationToken cancellationToken)
     {
         await createValidator.ValidateAndThrowAsync(request, cancellationToken);
@@ -29,6 +29,7 @@ public sealed class TasksController(
 
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<TaskResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> List(
         [FromQuery] TodoTaskStatus? status,
         [FromQuery] DateOnly? dueDate,
@@ -46,7 +47,7 @@ public sealed class TasksController(
 
     [HttpGet("{code}", Name = nameof(GetByCode))]
     [ProducesResponseType(typeof(TaskResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByCode(string code, CancellationToken cancellationToken)
     {
         var task = await service.GetAsync(code, cancellationToken);
@@ -57,8 +58,8 @@ public sealed class TasksController(
 
     [HttpPut("{code}")]
     [ProducesResponseType(typeof(TaskResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(string code, UpdateTaskRequest request, CancellationToken cancellationToken)
     {
         await updateValidator.ValidateAndThrowAsync(request, cancellationToken);
@@ -71,7 +72,7 @@ public sealed class TasksController(
 
     [HttpDelete("{code}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(string code, CancellationToken cancellationToken)
     {
         await service.DeleteAsync(code, cancellationToken);
