@@ -140,6 +140,12 @@ tests/GestaoDeTarefas.Tests
 - **`code` como string** (`TSK-XXXXXXXX`): identificador de negócio legível e não sequencial, evitando enumeração de recursos.
 - **`CreatedAt`** usa o relógio do sistema; `TimeProvider` não foi necessário, pois nenhuma regra depende de tempo.
 
+Compromissos conscientes em relação ao SOLID:
+
+- **Repositório sobre o `DbContext` concreto** (DIP): o `DbContext` já é a abstração de acesso a dados (Unit of Work + repositório) e o `ITaskRepository` isola o EF; uma interface adicional sobre o contexto seria redundante.
+- **Mapeamento de exceções centralizado** (OCP): um único ponto traduz exceção em status HTTP, mantendo o conhecimento de HTTP fora do domínio; o custo é editar esse ponto ao introduzir um novo tipo de erro.
+- **Links HATEOAS montados no controller** (SRP): por ser detalhe de apresentação usado apenas aqui, evita um serviço dedicado para poucas linhas.
+
 Deixei de fora, por não agregarem a este escopo:
 
 - **Clean Architecture / Hexagonal**: complexidade sem retorno para um CRUD.
