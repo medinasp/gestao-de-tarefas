@@ -1,6 +1,6 @@
 # Gestão de Tarefas
 
-API REST para gerenciamento de tarefas (to-do): criação, edição, remoção, listagem com filtros e busca por código. Projeto backend em .NET 8, com persistência em memória.
+API REST para gerenciamento de tarefas (to-do): criação, edição, remoção, listagem com filtros e busca textual. Projeto backend em .NET 8, com persistência em memória.
 
 ## Requisitos
 
@@ -34,7 +34,7 @@ ASPNETCORE_ENVIRONMENT=Production dotnet run --project src/GestaoDeTarefas.Api
 dotnet test
 ```
 
-São 33 testes cobrindo domínio, serviço (lógica de negócio), validações e cenários ponta a ponta da API.
+São 38 testes cobrindo domínio, serviço (lógica de negócio), validações e cenários ponta a ponta da API.
 
 ## Endpoints
 
@@ -113,7 +113,7 @@ curl -X DELETE http://localhost:5090/api/tasks/{code}
 
 O `PUT` é uma substituição completa do recurso: envie todos os campos. O `status` é obrigatório no `PUT` — omiti-lo resulta em `400` (evita rebaixar o status por engano).
 
-Erros seguem o formato **Problem Details** (RFC 7807). Uma validação de corpo inválida retorna `400` com os erros por campo; parâmetros de query inválidos (por exemplo, um `status` inexistente) também retornam `400`. Um código inexistente retorna `404`.
+Erros seguem o formato **Problem Details** (RFC 7807). Uma validação de corpo inválida retorna `400` com os erros por campo; parâmetros de query inválidos (por exemplo, um `status` inexistente) também retornam `400`. Um código inexistente retorna `404`. Qualquer endpoint pode retornar `500` em caso de erro inesperado.
 
 ## Estrutura do projeto
 
@@ -123,10 +123,11 @@ src/GestaoDeTarefas.Api
   Services/        regra de negócio
   Repositories/    acesso a dados (EF Core InMemory)
   Domain/          entidade, enum e regras de criação
+  Exceptions/      exceções de domínio/aplicação (ex.: NotFoundException)
   Dtos/            contratos de entrada e saída
   Mapping/         conversão domínio -> DTO
   Validation/      validações de entrada (FluentValidation)
-  Infrastructure/  DbContext e tratamento de erros
+  Infrastructure/  DbContext, carga de exemplo (seed) e tratamento de erros
 tests/GestaoDeTarefas.Tests
   Domain / Services / Validation / Functional
 ```
