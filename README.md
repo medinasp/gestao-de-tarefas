@@ -36,6 +36,8 @@ dotnet test
 
 São 38 testes cobrindo domínio, serviço (lógica de negócio), validações e cenários ponta a ponta da API.
 
+Há também um relatório de testes manuais pela interface do Swagger, com evidências (capturas de tela) de cada endpoint nos caminhos de sucesso e de erro, em [`qa/relatorio-qa.md`](qa/relatorio-qa.md).
+
 ## Endpoints
 
 Base: `http://localhost:5090/api/tasks`
