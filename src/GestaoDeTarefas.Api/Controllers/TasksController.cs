@@ -9,6 +9,7 @@ namespace GestaoDeTarefas.Api.Controllers;
 [ApiController]
 [Route("api/tasks")]
 [Produces("application/json")]
+[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
 public sealed class TasksController(
     ITaskService service,
     IValidator<CreateTaskRequest> createValidator,
