@@ -13,5 +13,7 @@ public interface ITaskService
 
     Task<TaskResponse> UpdateAsync(string code, UpdateTaskRequest request, CancellationToken cancellationToken = default);
 
+    Task<TaskResponse> PatchAsync(string code, PatchTaskRequest request, CancellationToken cancellationToken = default);
+
     Task DeleteAsync(string code, CancellationToken cancellationToken = default);
 }

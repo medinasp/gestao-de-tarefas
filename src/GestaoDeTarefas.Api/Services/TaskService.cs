@@ -49,6 +49,23 @@ public sealed class TaskService(ITaskRepository repository, ILogger<TaskService>
         return task.ToResponse();
     }
 
+    public async Task<TaskResponse> PatchAsync(string code, PatchTaskRequest request, CancellationToken cancellationToken = default)
+    {
+        var task = await repository.GetByCodeAsync(code, cancellationToken)
+            ?? throw NotFoundException.ForTask(code);
+
+        task.Update(
+            request.Title ?? task.Title,
+            request.Description ?? task.Description,
+            request.DueDate ?? task.DueDate,
+            request.Status ?? task.Status);
+
+        await repository.UpdateAsync(task, cancellationToken);
+        logger.LogInformation("Task {Code} patched.", task.Code);
+
+        return task.ToResponse();
+    }
+
     public async Task DeleteAsync(string code, CancellationToken cancellationToken = default)
     {
         var task = await repository.GetByCodeAsync(code, cancellationToken)

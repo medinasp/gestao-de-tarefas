@@ -9,6 +9,7 @@ public class TaskValidatorsTests
 {
     private readonly CreateTaskRequestValidator _create = new();
     private readonly UpdateTaskRequestValidator _update = new();
+    private readonly PatchTaskRequestValidator _patch = new();
 
     [Fact]
     public void Create_requires_title()
@@ -64,6 +65,36 @@ public class TaskValidatorsTests
         var request = new UpdateTaskRequest("Valid", null, null, TodoTaskStatus.Done);
 
         var result = _update.TestValidate(request);
+
+        result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [Fact]
+    public void Patch_rejects_empty_request()
+    {
+        var request = new PatchTaskRequest(null, null, null, null);
+
+        var result = _patch.TestValidate(request);
+
+        Assert.False(result.IsValid);
+    }
+
+    [Fact]
+    public void Patch_rejects_empty_title_when_provided()
+    {
+        var request = new PatchTaskRequest("", null, null, null);
+
+        var result = _patch.TestValidate(request);
+
+        result.ShouldHaveValidationErrorFor(x => x.Title);
+    }
+
+    [Fact]
+    public void Patch_accepts_single_field()
+    {
+        var request = new PatchTaskRequest(null, "só a descrição", null, null);
+
+        var result = _patch.TestValidate(request);
 
         result.ShouldNotHaveAnyValidationErrors();
     }

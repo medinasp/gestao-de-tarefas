@@ -108,6 +108,50 @@ public class TasksApiTests
     }
 
     [Fact]
+    public async Task Patch_updates_only_provided_field_and_keeps_the_rest()
+    {
+        await using var factory = new TasksApiFactory();
+        var client = factory.CreateClient();
+
+        var created = await client.PostAsJsonAsync("/api/tasks",
+            new { title = "Original", description = "Desc original", status = "Pending" });
+        var code = (await created.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("code").GetString();
+
+        var response = await client.PatchAsJsonAsync($"/api/tasks/{code}", new { status = "Done" });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("Done", body.GetProperty("status").GetString());
+        Assert.Equal("Original", body.GetProperty("title").GetString());
+        Assert.Equal("Desc original", body.GetProperty("description").GetString());
+    }
+
+    [Fact]
+    public async Task Patch_empty_body_returns_400()
+    {
+        await using var factory = new TasksApiFactory();
+        var client = factory.CreateClient();
+
+        var created = await client.PostAsJsonAsync("/api/tasks", new { title = "X", status = "Pending" });
+        var code = (await created.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("code").GetString();
+
+        var response = await client.PatchAsJsonAsync($"/api/tasks/{code}", new { });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Patch_missing_task_returns_404()
+    {
+        await using var factory = new TasksApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.PatchAsJsonAsync("/api/tasks/TSK-NOPE", new { status = "Done" });
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
     public async Task Delete_returns_204_then_get_returns_404()
     {
         await using var factory = new TasksApiFactory();

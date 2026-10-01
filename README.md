@@ -47,7 +47,8 @@ Base: `http://localhost:5090/api/tasks`
 | POST | `/api/tasks` | Cria uma tarefa | `201 Created` (+ header `Location`), `400` |
 | GET | `/api/tasks` | Lista tarefas (filtros opcionais) | `200 OK`, `400` |
 | GET | `/api/tasks/{code}` | Obtém uma tarefa pelo código | `200 OK`, `404` |
-| PUT | `/api/tasks/{code}` | Atualiza uma tarefa | `200 OK`, `400`, `404` |
+| PUT | `/api/tasks/{code}` | Atualiza uma tarefa (completa) | `200 OK`, `400`, `404` |
+| PATCH | `/api/tasks/{code}` | Atualiza uma tarefa (parcial) | `200 OK`, `400`, `404` |
 | DELETE | `/api/tasks/{code}` | Remove uma tarefa | `204 No Content`, `404` |
 
 ### Campos da tarefa
@@ -93,9 +94,10 @@ Resposta (`201`):
   "status": "Pending",
   "createdAt": "2026-09-30T11:06:15.86+00:00",
   "_links": {
-    "self":   { "href": "/api/tasks/TSK-A3FFB195", "method": "GET" },
-    "update": { "href": "/api/tasks/TSK-A3FFB195", "method": "PUT" },
-    "delete": { "href": "/api/tasks/TSK-A3FFB195", "method": "DELETE" }
+    "self":          { "href": "/api/tasks/TSK-A3FFB195", "method": "GET" },
+    "update":        { "href": "/api/tasks/TSK-A3FFB195", "method": "PUT" },
+    "partialUpdate": { "href": "/api/tasks/TSK-A3FFB195", "method": "PATCH" },
+    "delete":        { "href": "/api/tasks/TSK-A3FFB195", "method": "DELETE" }
   }
 }
 ```
@@ -110,10 +112,16 @@ curl -X PUT http://localhost:5090/api/tasks/{code} \
   -H "Content-Type: application/json" \
   -d '{"title":"Comprar café e pão","description":null,"dueDate":"2026-10-02","status":"InProgress"}'
 
+curl -X PATCH http://localhost:5090/api/tasks/{code} \
+  -H "Content-Type: application/json" \
+  -d '{"status":"Done"}'
+
 curl -X DELETE http://localhost:5090/api/tasks/{code}
 ```
 
 O `PUT` é uma substituição completa do recurso: envie todos os campos. O `status` é obrigatório no `PUT` — omiti-lo resulta em `400` (evita rebaixar o status por engano).
+
+O `PATCH` é uma atualização parcial: envie apenas os campos que deseja alterar (ex.: só o `status`); os demais são mantidos. Enviar um corpo sem nenhum campo resulta em `400`. Observação: por usar *merge*, o `PATCH` não zera campos — para limpar `description` ou `dueDate`, use o `PUT`.
 
 Erros seguem o formato **Problem Details** (RFC 7807). Uma validação de corpo inválida retorna `400` com os erros por campo; parâmetros de query inválidos (por exemplo, um `status` inexistente) também retornam `400`. Um código inexistente retorna `404`. Qualquer endpoint pode retornar `500` em caso de erro inesperado.
 

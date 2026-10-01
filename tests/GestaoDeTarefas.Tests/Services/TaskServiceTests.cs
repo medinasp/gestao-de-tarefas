@@ -85,6 +85,31 @@ public class TaskServiceTests
     }
 
     [Fact]
+    public async Task PatchAsync_updates_only_provided_fields_and_keeps_the_rest()
+    {
+        var task = TodoTask.Create("Old title", "Old description", new DateOnly(2026, 10, 1), TodoTaskStatus.Pending);
+        _repository.GetByCodeAsync(task.Code, Arg.Any<CancellationToken>()).Returns(task);
+        var request = new PatchTaskRequest(null, null, null, TodoTaskStatus.Done);
+
+        var result = await _service.PatchAsync(task.Code, request);
+
+        Assert.Equal("Old title", result.Title);
+        Assert.Equal("Old description", result.Description);
+        Assert.Equal(new DateOnly(2026, 10, 1), result.DueDate);
+        Assert.Equal(TodoTaskStatus.Done, result.Status);
+        await _repository.Received(1).UpdateAsync(task, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task PatchAsync_throws_NotFound_when_missing()
+    {
+        _repository.GetByCodeAsync("X", Arg.Any<CancellationToken>()).Returns((TodoTask?)null);
+        var request = new PatchTaskRequest(null, "new", null, null);
+
+        await Assert.ThrowsAsync<NotFoundException>(() => _service.PatchAsync("X", request));
+    }
+
+    [Fact]
     public async Task DeleteAsync_throws_NotFound_when_missing()
     {
         _repository.GetByCodeAsync("X", Arg.Any<CancellationToken>()).Returns((TodoTask?)null);

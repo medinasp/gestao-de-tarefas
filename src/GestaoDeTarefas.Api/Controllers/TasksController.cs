@@ -13,7 +13,8 @@ namespace GestaoDeTarefas.Api.Controllers;
 public sealed class TasksController(
     ITaskService service,
     IValidator<CreateTaskRequest> createValidator,
-    IValidator<UpdateTaskRequest> updateValidator) : ControllerBase
+    IValidator<UpdateTaskRequest> updateValidator,
+    IValidator<PatchTaskRequest> patchValidator) : ControllerBase
 {
     /// <summary>Cria uma nova tarefa.</summary>
     /// <response code="201">Tarefa criada; retorna o recurso com o código gerado e os links.</response>
@@ -78,6 +79,21 @@ public sealed class TasksController(
         return Ok(WithLinks(await service.UpdateAsync(code, request, cancellationToken)));
     }
 
+    /// <summary>Atualiza parcialmente uma tarefa: apenas os campos enviados são alterados; os demais são mantidos.</summary>
+    /// <response code="200">Tarefa atualizada.</response>
+    /// <response code="400">Dados de entrada inválidos ou nenhum campo informado.</response>
+    /// <response code="404">Nenhuma tarefa com o código informado.</response>
+    [HttpPatch("{code}")]
+    [ProducesResponseType(typeof(TaskResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Patch(string code, PatchTaskRequest request, CancellationToken cancellationToken)
+    {
+        await patchValidator.ValidateAndThrowAsync(request, cancellationToken);
+
+        return Ok(WithLinks(await service.PatchAsync(code, request, cancellationToken)));
+    }
+
     /// <summary>Remove uma tarefa.</summary>
     /// <response code="204">Tarefa removida.</response>
     /// <response code="404">Nenhuma tarefa com o código informado.</response>
@@ -97,6 +113,7 @@ public sealed class TasksController(
         {
             ["self"] = new(self, "GET"),
             ["update"] = new(self, "PUT"),
+            ["partialUpdate"] = new(self, "PATCH"),
             ["delete"] = new(self, "DELETE")
         };
         return task;
