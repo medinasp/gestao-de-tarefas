@@ -9,7 +9,7 @@ public class TasksApiTests
     [Fact]
     public async Task Post_valid_task_returns_201_with_location_and_links()
     {
-        using var factory = new TasksApiFactory();
+        await using var factory = new TasksApiFactory();
         var client = factory.CreateClient();
 
         var response = await client.PostAsJsonAsync("/api/tasks", new { title = "Buy coffee", status = "Pending" });
@@ -28,7 +28,7 @@ public class TasksApiTests
     [Fact]
     public async Task Post_without_title_returns_400()
     {
-        using var factory = new TasksApiFactory();
+        await using var factory = new TasksApiFactory();
         var client = factory.CreateClient();
 
         var response = await client.PostAsJsonAsync("/api/tasks", new { title = "", status = "Pending" });
@@ -39,7 +39,7 @@ public class TasksApiTests
     [Fact]
     public async Task Get_missing_task_returns_404()
     {
-        using var factory = new TasksApiFactory();
+        await using var factory = new TasksApiFactory();
         var client = factory.CreateClient();
 
         var response = await client.GetAsync("/api/tasks/TSK-NOPE");
@@ -50,7 +50,7 @@ public class TasksApiTests
     [Fact]
     public async Task Get_after_create_returns_the_task()
     {
-        using var factory = new TasksApiFactory();
+        await using var factory = new TasksApiFactory();
         var client = factory.CreateClient();
 
         var created = await client.PostAsJsonAsync("/api/tasks", new { title = "Task", status = "Pending" });
@@ -66,7 +66,7 @@ public class TasksApiTests
     [Fact]
     public async Task Put_updates_task_returns_200()
     {
-        using var factory = new TasksApiFactory();
+        await using var factory = new TasksApiFactory();
         var client = factory.CreateClient();
 
         var created = await client.PostAsJsonAsync("/api/tasks", new { title = "Old", status = "Pending" });
@@ -84,7 +84,7 @@ public class TasksApiTests
     [Fact]
     public async Task Put_without_status_returns_400()
     {
-        using var factory = new TasksApiFactory();
+        await using var factory = new TasksApiFactory();
         var client = factory.CreateClient();
 
         var created = await client.PostAsJsonAsync("/api/tasks", new { title = "Old", status = "Pending" });
@@ -98,7 +98,7 @@ public class TasksApiTests
     [Fact]
     public async Task Put_missing_task_returns_404()
     {
-        using var factory = new TasksApiFactory();
+        await using var factory = new TasksApiFactory();
         var client = factory.CreateClient();
 
         var response = await client.PutAsJsonAsync("/api/tasks/TSK-NOPE",
@@ -110,7 +110,7 @@ public class TasksApiTests
     [Fact]
     public async Task Delete_returns_204_then_get_returns_404()
     {
-        using var factory = new TasksApiFactory();
+        await using var factory = new TasksApiFactory();
         var client = factory.CreateClient();
 
         var created = await client.PostAsJsonAsync("/api/tasks", new { title = "Task", status = "Pending" });
@@ -126,7 +126,7 @@ public class TasksApiTests
     [Fact]
     public async Task Delete_missing_task_returns_404()
     {
-        using var factory = new TasksApiFactory();
+        await using var factory = new TasksApiFactory();
         var client = factory.CreateClient();
 
         var response = await client.DeleteAsync("/api/tasks/TSK-NOPE");
@@ -137,7 +137,7 @@ public class TasksApiTests
     [Fact]
     public async Task List_with_invalid_status_returns_400()
     {
-        using var factory = new TasksApiFactory();
+        await using var factory = new TasksApiFactory();
         var client = factory.CreateClient();
 
         var response = await client.GetAsync("/api/tasks?status=Banana");
@@ -148,7 +148,7 @@ public class TasksApiTests
     [Fact]
     public async Task List_filters_by_status()
     {
-        using var factory = new TasksApiFactory();
+        await using var factory = new TasksApiFactory();
         var client = factory.CreateClient();
 
         await client.PostAsJsonAsync("/api/tasks", new { title = "Pending one", status = "Pending" });
@@ -165,7 +165,7 @@ public class TasksApiTests
     [Fact]
     public async Task List_searches_by_title_and_description()
     {
-        using var factory = new TasksApiFactory();
+        await using var factory = new TasksApiFactory();
         var client = factory.CreateClient();
 
         await client.PostAsJsonAsync("/api/tasks", new { title = "Comprar café", status = "Pending" });
@@ -182,7 +182,7 @@ public class TasksApiTests
     [Fact]
     public async Task List_filters_by_due_date()
     {
-        using var factory = new TasksApiFactory();
+        await using var factory = new TasksApiFactory();
         var client = factory.CreateClient();
 
         await client.PostAsJsonAsync("/api/tasks", new { title = "Due Oct 1", dueDate = "2026-10-01", status = "Pending" });
