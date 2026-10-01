@@ -40,12 +40,6 @@ public sealed class GlobalExceptionHandler(
             Status = StatusCodes.Status404NotFound,
             Detail = notFound.Message
         },
-        ArgumentException argument => new ProblemDetails
-        {
-            Title = "Invalid request",
-            Status = StatusCodes.Status400BadRequest,
-            Detail = argument.Message
-        },
         _ => new ProblemDetails
         {
             Title = "An unexpected error occurred",
