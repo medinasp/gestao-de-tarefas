@@ -136,7 +136,7 @@ tests/GestaoDeTarefas.Tests
 
 - **Factory Method (estático)** — `TodoTask.Create`: o construtor é privado e a criação passa por um único método que garante a tarefa sempre válida (valida o título, gera o código).
 - **Repository** — `ITaskRepository` / `TaskRepository`: isola o acesso a dados e permite testar o serviço com um substituto.
-- **Unit of Work** — fornecido pelo `DbContext` do EF Core: ele rastreia as mudanças e as grava de forma atômica no `SaveChanges` (o `SaveChanges` é o commit da unidade de trabalho). Não foi criada uma abstração própria de UoW porque o `DbContext` já é a implementação do padrão.
+- **Unit of Work** — `DbContext` do EF Core, com persistência via `SaveChanges`.
 - **Service Layer** — `ITaskService` / `TaskService`: concentra a regra de negócio e mantém os controllers finos.
 - **DTO** — `Dtos/`: contratos de entrada e saída, sem expor a entidade de persistência.
 - **Mapper (manual)** — `Mapping/TaskMappingExtensions`: conversão entidade → DTO sem biblioteca de mapeamento.
