@@ -103,16 +103,41 @@ Os cinco endpoints publicados, com descrições vindas da documentação OpenAPI
 
 ---
 
-## 5. DELETE /api/tasks/{code} — Remover tarefa
+## 5. PATCH /api/tasks/{code} — Atualizar parcialmente
 
-### 5.1 Sucesso (feliz)
+### 5.1 Sucesso — atualização parcial com merge (feliz)
+- **Teste:** enviar apenas `{ "status": "Done" }` numa tarefa existente (que tinha título, descrição e data).
+- **Esperado:** `200 OK`; só o `status` muda, e `title`/`description`/`dueDate` são mantidos.
+- **Obtido:** `200`, `status` = `Done`, demais campos preservados; `_links` inclui `partialUpdate`. ✓
+
+![PATCH 200 merge](screenshots/13-patch-200-merge.jpg)
+
+### 5.2 Erro — corpo vazio (triste)
+- **Teste:** enviar corpo `{}`, sem nenhum campo.
+- **Esperado:** `400 Bad Request`, pois é preciso informar ao menos um campo.
+- **Obtido:** `400`, `errors` com "Provide at least one field to update.". ✓
+
+![PATCH 400](screenshots/14-patch-400-vazio.jpg)
+
+### 5.3 Erro — código inexistente (triste)
+- **Teste:** atualizar parcialmente um código que não existe, com corpo válido.
+- **Esperado:** `404 Not Found`.
+- **Obtido:** `404`, `detail = "Task 'TSK-NAOEXISTE' was not found."`. ✓
+
+![PATCH 404](screenshots/15-patch-404.jpg)
+
+---
+
+## 6. DELETE /api/tasks/{code} — Remover tarefa
+
+### 6.1 Sucesso (feliz)
 - **Teste:** remover tarefa existente (`TSK-E5C90E18`).
 - **Esperado:** `204 No Content`, sem corpo de resposta.
 - **Obtido:** `204`, sem corpo. ✓
 
 ![DELETE 204](screenshots/11-delete-204.jpg)
 
-### 5.2 Erro — código inexistente (triste)
+### 6.2 Erro — código inexistente (triste)
 - **Teste:** remover novamente o mesmo código (já removido no passo anterior).
 - **Esperado:** `404 Not Found`, confirmando que a remoção anterior ocorreu.
 - **Obtido:** `404`, `detail = "Task 'TSK-E5C90E18' was not found."`. ✓
@@ -135,10 +160,13 @@ Os cinco endpoints publicados, com descrições vindas da documentação OpenAPI
 | 4.1 | PUT /api/tasks/{code} | Corpo válido | 200 | ✓ |
 | 4.2 | PUT /api/tasks/{code} | Sem status | 400 | ✓ |
 | 4.3 | PUT /api/tasks/{code} | Código inexistente | 404 | ✓ |
-| 5.1 | DELETE /api/tasks/{code} | Código existente | 204 | ✓ |
-| 5.2 | DELETE /api/tasks/{code} | Código inexistente | 404 | ✓ |
+| 5.1 | PATCH /api/tasks/{code} | Merge (só status) | 200 | ✓ |
+| 5.2 | PATCH /api/tasks/{code} | Corpo vazio | 400 | ✓ |
+| 5.3 | PATCH /api/tasks/{code} | Código inexistente | 404 | ✓ |
+| 6.1 | DELETE /api/tasks/{code} | Código existente | 204 | ✓ |
+| 6.2 | DELETE /api/tasks/{code} | Código inexistente | 404 | ✓ |
 
-Todos os 12 cenários passaram. As respostas de erro seguem o formato Problem Details (RFC 7807) com
+Todos os 15 cenários passaram. As respostas de erro seguem o formato Problem Details (RFC 7807) com
 `content-type: application/problem+json`, e as respostas de sucesso retornam `application/json`.
 
 ## Observações de QA
