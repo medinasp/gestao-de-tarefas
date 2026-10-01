@@ -11,15 +11,15 @@ public sealed class TaskRepository(AppDbContext db) : ITaskRepository
 
     public async Task<IReadOnlyList<TodoTask>> ListAsync(TodoTaskStatus? status, DateOnly? dueDate, string? search, CancellationToken cancellationToken = default)
     {
-        var term = string.IsNullOrWhiteSpace(search) ? null : search.Trim().ToLower();
+        var term = string.IsNullOrWhiteSpace(search) ? null : search.Trim().ToLowerInvariant();
 
         return await db.Tasks
             .AsNoTracking()
             .Where(t =>
                 (status == null || t.Status == status) &&
                 (dueDate == null || t.DueDate == dueDate) &&
-                (term == null || t.Title.ToLower().Contains(term) ||
-                    (t.Description != null && t.Description.ToLower().Contains(term))))
+                (term == null || t.Title.ToLowerInvariant().Contains(term) ||
+                    (t.Description != null && t.Description.ToLowerInvariant().Contains(term))))
             .OrderBy(t => t.CreatedAt)
             .ToListAsync(cancellationToken);
     }
