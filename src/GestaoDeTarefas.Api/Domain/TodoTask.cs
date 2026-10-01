@@ -9,10 +9,6 @@ public class TodoTask
     public TodoTaskStatus Status { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
 
-    private TodoTask()
-    {
-    }
-
     private TodoTask(string code, string title, string? description, DateOnly? dueDate, TodoTaskStatus status, DateTimeOffset createdAt)
     {
         Code = code;
