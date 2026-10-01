@@ -1,0 +1,25 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+
+[*.cs]
+indent_size = 4
+
+# Os limites de tamanho das strings da entidade são definidos no Fluent API
+# (AppDbContext.OnModelCreating), e não em data annotations, para manter o domínio
+# livre de dependências de persistência.
+resharper_entity_framework_model_validation_unlimited_string_length_highlighting = none
+
+[**/Dtos/*.cs]
+# DTOs são contratos de serialização: seus membros são consumidos pela (de)serialização
+# JSON, não por acesso direto no código.
+resharper_unused_member_global_highlighting = none
+resharper_unused_auto_property_accessor_global_highlighting = none
+
+[*.{json,csproj,props,targets}]
+indent_size = 2
